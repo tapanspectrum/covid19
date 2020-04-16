@@ -1,0 +1,22 @@
+{
+  "name": "covid19tracker",
+  "version": "1.0.0",
+  "description": "covid-19 tracker",
+  "main": "index.js",
+  "scripts": {
+    "start":"node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Tapan Acharjee,'tapanacharjee.in'",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "csv-parser": "^2.3.2",
+    "express": "^4.17.1",
+    "http": "0.0.1-security",
+    "https": "^1.0.0",
+    "mongodb": "^3.5.5",
+    "node-cron": "^2.0.3",
+    "request": "^2.88.2"
+  }
+}
