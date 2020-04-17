@@ -19,9 +19,97 @@ app.use(cors());
 
 
 var MongoClient = require('mongodb').MongoClient;
-var url = 'mongodb://tapu_db:!mistuR1@ds247852.mlab.com:47852/' + db;
+var url = 'mongodb://localhost:27017' + db;
 
-setTimeout(async function () {
+// for testing purpose I am using setTimeout 
+// setTimeout(async function () {
+//     var dateObj = new Date;
+//     var month = dateObj.getUTCMonth() + 1;
+//     var day = dateObj.getUTCDate();
+//     var year = dateObj.getUTCFullYear();
+
+//     var month_name = ["JAN", "FEB", "MAR", "APR", "MAY", "JUNE", "JULY", "AUG", "SEP", "OCT", "NOV", "DEC"];
+//     var formattedMonth = month;
+
+//     if (month < 10) {
+//         month = "0" + month;
+//     }
+//     if (day < 10) {
+//         day = "0" + day;
+//     }
+//     newdate = month + "-" + day + "-" + year;
+
+//     var formatted_date = day + " " + month_name[formattedMonth - 1] + " " + year;
+//     var fileName = newdate + '.csv';
+//     // var fileName = '04-15-2020.csv';
+
+//     const results = [];
+//     var respdata = [];
+//     var totalConfirmed = 0;
+//     var totalDeaths = 0;
+//     var totalRecovered = 0;
+
+//     const file = fs.createWriteStream(fileName);
+//     await new Promise((resolve, reject) => {
+//         http.get(`https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/${fileName}`, (resp) => {
+//             let data = '';
+//             resp.on('data', (chunk) => {
+//                 data += chunk;
+//             });
+//             resp.pipe(file);
+//             fs.createReadStream(fileName)
+//                 .pipe(csv())
+//                 .on('data', (data) => {
+//                     results.push(data)
+//                 })
+//                 .on('end', () => {
+//                     if (results.length > 0) {
+//                         for (var i = 0; i < results.length; i++) {
+//                             console.log('result', results[i]);
+//                             totalConfirmed = parseInt(results[i].Confirmed) + totalConfirmed;
+//                             totalDeaths = parseInt(results[i].Deaths) + totalDeaths;
+//                             totalRecovered = parseInt(results[i].Recovered) + totalRecovered;
+//                         }
+
+//                         for (var j = 0; j < countryList.length; j++) {
+//                             var country_obj = JSON.parse(JSON.stringify(countryList[j]));
+
+//                             let state = getStatistics(country_obj, results);
+//                             respdata.push(state);
+//                         }
+
+//                         var items = {
+//                             total_confirmed: totalConfirmed,
+//                             total_deaths: totalDeaths,
+//                             total_recovered: totalRecovered,
+//                             last_date_updated: formatted_date,
+//                             country_statistics: respdata.sort((a, b) => b.confirmed - a.confirmed)
+//                         }
+//                         console.log('items', items);
+//                         MongoClient.connect("mongodb://tapu_db:!mistuR1@ds247852.mlab.com:47852/heroku_2nbpcct5", function (err, client) {
+//                             if (err) throw err;
+//                             var dbo = client.db("heroku_2nbpcct5");
+//                             dbo.collection("covid_statistics").insertOne(items, function (err, res) {
+//                                 console.log('res',res);
+//                                 if (err) throw err;
+//                                 // throw err;
+//                             });
+//                         });
+//                     }
+//                 });
+//             resolve();
+//         })
+//         resp.on('error', (error) => {
+//             reject(error);
+//         })
+// }).catch(error => {
+//     console.log(`Something happened: ${error}`);
+// });
+// }, 3000);
+
+// corn schedule automatic hit function during given duration for production use
+
+cron.schedule('23 59 * * * *', async function () {
     var dateObj = new Date;
     var month = dateObj.getUTCMonth() + 1;
     var day = dateObj.getUTCDate();
@@ -85,7 +173,7 @@ setTimeout(async function () {
                             country_statistics: respdata.sort((a, b) => b.confirmed - a.confirmed)
                         }
                         console.log('items', items);
-                        MongoClient.connect("mongodb://tapu_db:!mistuR1@ds247852.mlab.com:47852/heroku_2nbpcct5", function (err, client) {
+                        MongoClient.connect("mongodb://localhost:27017", function (err, client) {
                             if (err) throw err;
                             var dbo = client.db("heroku_2nbpcct5");
                             dbo.collection("covid_statistics").insertOne(items, function (err, res) {
@@ -104,12 +192,15 @@ setTimeout(async function () {
 }).catch(error => {
     console.log(`Something happened: ${error}`);
 });
-}, 3000);
+});
+
+
+
 
 
 
 app.get('/', async function (req, res) {
-    MongoClient.connect("mongodb://tapu_db:!mistuR1@ds247852.mlab.com:47852/heroku_2nbpcct5", function (err, client) {
+    MongoClient.connect("mongodb://localhost:27017", function (err, client) {
         console.log('100', url);
         // console.log(client);
         console.log('100', err);
@@ -133,7 +224,7 @@ app.get('/', async function (req, res) {
 });
 
 app.get('/markers.geojson', function (req, res) {
-    MongoClient.connect("mongodb://tapu_db:!mistuR1@ds247852.mlab.com:47852/heroku_2nbpcct5", function (err, client) {
+    MongoClient.connect("mongodb://localhost:27017", function (err, client) {
         let database = client.db(db);
         database.collection(collection).find()
             .toArray((err, results) => {
